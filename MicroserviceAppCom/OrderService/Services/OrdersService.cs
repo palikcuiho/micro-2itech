@@ -3,6 +3,7 @@ using OrderService.Clients;
 using OrderService.DTOs;
 using OrderService.Models;
 using OrderService.Repositories;
+using System.Diagnostics.Eventing.Reader;
 
 namespace OrderService.Services
 {
@@ -22,8 +23,33 @@ namespace OrderService.Services
         public async Task<IEnumerable<Order>> GetAllOrdersAsync() =>
             await _repository.GetAllAsync();
 
-        public async Task<Order?> GetOrderByIdAsync(string id) =>
-            await _repository.GetByIdAsync(id);
+        public async Task<OrderDTO?> GetOrderByIdAsync(string id)
+        {
+            if (await _repository.GetByIdAsync(id) is Order order)
+            { 
+            var dto = new OrderDTO()
+            {
+                Id = order.Id,
+                Quantity = order.Quantity,
+                OrderDate = order.OrderDate.ToString()
+            };
+
+            if (await _customerServiceClient.GetCustomerAsync(order.CustomerId) is CustomerDTO customer
+                && await _productServiceClient.GetProductAsync(order.ProductId) is ProductDTO product)
+            {
+                dto.Customer = customer;
+                dto.Product = product;
+            }
+            else
+            {
+                dto.Customer.Id = order.CustomerId;
+                dto.Product.Id = order.ProductId;
+            }
+            return dto;
+            }
+            return default;
+        }
+            
 
         public async Task<OrderDTO?> AddOrderAsync(OrderPostDTO order)
         {
