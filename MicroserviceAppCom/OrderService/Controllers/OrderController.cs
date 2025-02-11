@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.DTOs;
 using OrderService.Models;
 using OrderService.Services;
 
@@ -32,10 +33,13 @@ namespace OrderService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateOrder( Order order)
+        public async Task<ActionResult<Order>> CreateOrder(OrderPostDTO order)
         {
-            await _service.AddOrderAsync(order);
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            var createdOrder = await _service.AddOrderAsync(order);
+            if (createdOrder == null)
+                return BadRequest("Invalid product or customer ID.");
+
+            return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
         }
 
         [HttpPut("{id}")]

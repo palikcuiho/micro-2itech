@@ -1,3 +1,4 @@
+using OrderService.Clients;
 using OrderService.Configurations;
 using OrderService.Repositories;
 using OrderService.Services;
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+
+builder.Services.AddHttpClient<IProductServiceClient, ProductServiceClient>();
+builder.Services.AddHttpClient<ICustomerServiceClient, CustomerServiceClient>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -9,8 +9,8 @@ namespace OrderService.Models
         [BsonRepresentation(BsonType.ObjectId)] 
         public string? Id { get; set; }
 
-        public string ProductId { get; set; }
-        public string CustomerId { get; set; }
+        public int ProductId { get; set; }
+        public int CustomerId { get; set; }
         public int Quantity { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
